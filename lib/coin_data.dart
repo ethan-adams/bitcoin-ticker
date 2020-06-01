@@ -33,8 +33,8 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
-  Future<dynamic> getCoinData(String selectedCurrency) async {
-    String coin = 'BTC';
+  Future<dynamic> getCoinData(String coinType, String selectedCurrency) async {
+    String coin = coinType;
     String curr = selectedCurrency;
     String apiKey = '7B4A4126-401A-49E4-AE0F-020398B8B8CC';
     String url =
