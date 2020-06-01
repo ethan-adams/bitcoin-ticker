@@ -33,9 +33,9 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
-  Future<dynamic> getCoinData() async {
+  Future<dynamic> getCoinData(String selectedCurrency) async {
     String coin = 'BTC';
-    String curr = 'USD';
+    String curr = selectedCurrency;
     String apiKey = '7B4A4126-401A-49E4-AE0F-020398B8B8CC';
     String url =
         'https://rest.coinapi.io/v1/exchangerate/$coin/$curr?apikey=$apiKey';

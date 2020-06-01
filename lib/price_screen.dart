@@ -20,15 +20,12 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   void initState() {
     super.initState();
-    updateUI(widget.coinData);
+    updateUI(selectedCurrency);
   }
-//  CoinData coin = CoinData();
-//  var rate = coin.getCoinData();
-//  print(rate);
 
-  void updateUI(dynamic coinData) async {
+  void updateUI(String selectedCurrency) async {
     CoinData coinBrain = CoinData();
-    var coinData = await coinBrain.getCoinData();
+    var coinData = await coinBrain.getCoinData(selectedCurrency);
     setState(() {
       if (coinData == null) {
         rate = '0';
@@ -52,6 +49,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (value) {
         setState(() {
           selectedCurrency = value;
+          updateUI(selectedCurrency);
         });
       },
     );
@@ -69,6 +67,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onSelectedItemChanged: (selectedIndex) {
         setState(() {
           selectedCurrency = currenciesList[selectedIndex];
+          updateUI(selectedCurrency);
         });
       },
       children: items,
@@ -96,7 +95,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = $rate USD',
+                  '1 BTC = $rate $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
