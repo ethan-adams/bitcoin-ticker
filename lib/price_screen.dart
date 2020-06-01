@@ -1,20 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'coin_data.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
+  PriceScreen({this.coinData});
+
+  final coinData;
+
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
 
-  List<DropdownMenuItem> getDropdownItems() {
+  String selectedCurrency = 'USD';
+  var rate = '?';
+
+  @override
+  void initState() {
+    super.initState();
+    updateUI(widget.coinData);
+  }
+//  CoinData coin = CoinData();
+//  var rate = coin.getCoinData();
+//  print(rate);
+
+  void updateUI(dynamic coinData) async {
+    CoinData coinBrain = CoinData();
+    var coinData = await coinBrain.getCoinData();
+    setState(() {
+      if (coinData == null) {
+        rate = '0';
+        return;
+      }
+      double longRate = coinData["rate"];
+      rate = longRate.toInt().toString();
+      //print(rate);
+    });
+  }
+
+  DropdownButton<String> androidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
-    for(String item in currenciesList) {
+    for (String item in currenciesList) {
       dropdownItems.add(DropdownMenuItem(child: Text(item), value: item));
     }
-    return dropdownItems;
+
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: dropdownItems,
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value;
+        });
+      },
+    );
+  }
+
+  CupertinoPicker iOSPicker() {
+    List<Text> items = [];
+    for (String item in currenciesList) {
+      items.add(Text(item));
+    }
+
+    return CupertinoPicker(
+      backgroundColor: Colors.lightBlue,
+      itemExtent: 32,
+      onSelectedItemChanged: (selectedIndex) {
+        setState(() {
+          selectedCurrency = currenciesList[selectedIndex];
+        });
+      },
+      children: items,
+    );
   }
 
   @override
@@ -38,7 +96,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = $rate USD',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -53,15 +111,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-              value: selectedCurrency,
-              items: getDropdownItems(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCurrency = value;
-                });
-              },
-            ),
+            child: Platform.isAndroid ? androidDropdown() : iOSPicker(),
           ),
         ],
       ),
